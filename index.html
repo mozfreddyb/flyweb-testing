@@ -1,0 +1,31 @@
+<script>
+    const searchParams = new URLSearchParams( location.search);
+
+
+    var settings = {
+        serverName : searchParams.has('serverName') ?
+                searchParams.get('serverName') : `<em>heh00`,
+        responseHTML : searchParams.has('responseHTML') ?
+            searchParams.get('resposneHTML') : '<h1>Hello FlyWeb!!!</h1>',
+        responseType : searchParams.has('responseType') ?
+            searchParams.get('responseType') : 'text/html'
+    }
+    console.log(settings);
+
+    window.startServer = (function startServer() {
+        navigator.publishServer(settings.serverName).then
+        ((srv) => {
+            console.log("Server Published:", srv);
+            window.srv = srv;
+            srv.onfetch = (evt) => {
+                console.log("ONFETCH:", evt);
+                evt.respondWith(new Response(settings.responseHTML, {
+                    headers: {'Content-Type': settings.responseType}
+                }));
+            }
+        }, (err) => {
+            console.log("Server not published", err)
+        });
+    });
+    startServer();
+</script>
